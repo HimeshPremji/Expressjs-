@@ -2,6 +2,9 @@ const express = require('express');
 const users = require('./MOCK_DATA.json');
 const app = express();
 const port = 3000 || process.env.PORT;
+const fs = require('fs');
+
+app.use(express.urlencoded({ extended: false }));
 
 app.get('/', (req, res) => {
   return res.send('Hello World');
@@ -47,20 +50,38 @@ app
     const id = Number(req.params.id);
     if (isNaN(id)) res.status(400).send('Invalid ID supplied');
     const user = users.find((user) => user.id === id);
-    if (!user) res.send("User doesn't exist");
+    if (!user) res.send("User not found");
     res.json(user);
   })
   .patch((req, res) => {
     // Edit user details
     return res.json({ message: 'User updated' });
   })
+  // Delete user using id
   .delete((req, res) => {
-    // Delete user details
-    return res.json({ message: 'User updated' });
+    const id = Number(req.params.id);
+    if (isNaN(id)) return res.status(400).send('Invalid ID supplied');
+
+    const index = users.findIndex((user) => user.id === id);
+    if (index === -1)
+      return res.status(404).json({ message: 'User not found' });
+    users.splice(index, 1);
+
+    fs.writeFile('./MOCK_DATA.json', JSON.stringify(users), (err, data) => {
+      if (err) return res.status(500).json({ message: 'An error occurred' });
+      res.json({ message: `User deleted, ID was ${index + 1}` });
+    });
   });
 
 app.post('/api/users', (req, res) => {
-  res.json({ message: 'User added' });
+  const body = req.body;
+  const id = users.length + 1;
+  const newUser = { id, ...body };
+  users.push(newUser);
+  fs.writeFile('./MOCK_DATA.json', JSON.stringify(users), (err, data) => {
+    if (err) return res.status(500).json({ message: 'An error occurred' });
+    res.json({ message: `User added hehe, User ID is ${id} ` });
+  });
 });
 
 app.listen(port, () => {
