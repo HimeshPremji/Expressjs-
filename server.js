@@ -6,9 +6,22 @@ const fs = require('fs');
 
 app.use(express.urlencoded({ extended: false }));
 
+// Middleware Practice
+app.use((req, res, next) => {
+  console.log('Middleware executed');
+  req.myUsername = 'Himesh';
+  return next();
+});
+app.use((req, res, next) => {
+  console.log('Middleware executed 2 ' + req.myUsername);
+  // res.end("I'm done");
+  return next();
+});
+
 app.get('/', (req, res) => {
   return res.send('Hello World');
 });
+
 // app.get('/api/users', (req, res) => {
 //   const usersData = `
 //   <ul>
@@ -24,6 +37,7 @@ app.get('/', (req, res) => {
 //   res.send(usersData);
 // });
 
+// Restful API
 app.get('/api/users', (req, res) => {
   return res.json(users);
 });
@@ -50,11 +64,25 @@ app
     const id = Number(req.params.id);
     if (isNaN(id)) res.status(400).send('Invalid ID supplied');
     const user = users.find((user) => user.id === id);
-    if (!user) res.send("User not found");
+    if (!user) res.send('User not found');
     res.json(user);
   })
   .patch((req, res) => {
     // Edit user details
+    const id = Number(req.params.id);
+    if (isNaN(id)) return res.status(400).send('Invalid ID supplied');
+
+    const index = users.findIndex((user) => user.id === id);
+    if (index === -1)
+      return res.status(404).json({ message: 'User not found' });
+
+    users[index] = { ...users[index], ...req.body };
+
+    fs.writeFile('./MOCK_DATA.json', JSON.stringify(users), (err, data) => {
+      if (err) return res.status(500).json({ message: 'An error occurred' });
+      res.json({ message: `User updated, ID was ${index + 1}` });
+    });
+
     return res.json({ message: 'User updated' });
   })
   // Delete user using id
@@ -75,12 +103,23 @@ app
 
 app.post('/api/users', (req, res) => {
   const body = req.body;
+  if (
+    !body ||
+    !body.first_name ||
+    !body.last_name ||
+    !body.email ||
+    !body.gender ||
+    !body.job_title
+  ) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
   const id = users.length + 1;
   const newUser = { id, ...body };
   users.push(newUser);
+
   fs.writeFile('./MOCK_DATA.json', JSON.stringify(users), (err, data) => {
     if (err) return res.status(500).json({ message: 'An error occurred' });
-    res.json({ message: `User added hehe, User ID is ${id} ` });
+    res.json({ message: `User added hehe, \n User ID is ${id} ` });
   });
 });
 

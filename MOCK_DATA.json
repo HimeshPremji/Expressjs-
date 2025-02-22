@@ -8000,10 +8000,33 @@
     "job_title": "Safety Technician III"
   },
   {
+    "id": 1001,
+    "first_name": "Kathleen",
+    "last_name": "Bartolommeo",
+    "email": "kbartolommeors@washington"
+  },
+  {
     "id": 1002,
     "first_name": "Himesh",
     "last_name": "Dua",
     "email": "himeshdmaheswary@gmail.com",
+    "gender": "Mard",
+    "job_title": "Student a.k.a (Nalla)",
+    "age": "21"
+  },
+  {
+    "id": 1003,
+    "first_name": "Himesh",
+    "last_name": "Dua",
+    "email": "himeshdmaheswary@gmail.com",
+    "gender": "Male",
+    "job_title": ["Student a.k.a (Berozgar)", "Software Engineer"]
+  },
+  {
+    "id": 1004,
+    "first_name": "Shahmeer",
+    "last_name": "Aslam",
+    "email": "shahmeer@gmail.com",
     "gender": "Male",
     "job_title": "Student a.k.a (Berozgar)"
   }
